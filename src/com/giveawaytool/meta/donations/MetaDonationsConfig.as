@@ -1,4 +1,7 @@
 package com.giveawaytool.meta.donations {
+	import com.lachhh.lachhhengine.sfx.JukeBox;
+	import com.giveawaytool.ui.ModelAlertTypeEnum;
+	import com.giveawaytool.ui.MetaHasBeenTested;
 	import com.giveawaytool.meta.MetaGameProgress;
 
 	import flash.utils.Dictionary;
@@ -16,12 +19,14 @@ package com.giveawaytool.meta.donations {
 		public var metaRecurrentGoal:MetaDonationGoal = new MetaDonationGoal();
 		public var metaBigGoal:MetaDonationGoal = new MetaDonationGoal();
 		public var metaStreamTipConnection : MetaDonationSourceConnection = new MetaDonationSourceConnection();
+		public var metaStreamLabsConnection : MetaDonationSourceConnection = MetaDonationSourceConnection.createStreamLabsConnection();
 		public var metaAutoFetch : MetaDonationFetchTimer = new MetaDonationFetchTimer();
 		public var metaCharity : MetaCharityConfig = new MetaCharityConfig();
+		public var metaCustomAnim : MetaSelectAnimationConfig = new MetaSelectAnimationConfig();
 		
 		public var isDirty:Boolean = false;
-		
 		private var saveData : Dictionary = new Dictionary();
+		public var metaHasBeenTested : MetaHasBeenTested = new MetaHasBeenTested(ModelAlertTypeEnum.DONATION);
 
 		public function MetaDonationsConfig() {
 			
@@ -38,6 +43,7 @@ package com.giveawaytool.meta.donations {
 			metaBigGoal = new MetaDonationGoal();
 			metaAutoFetch = new MetaDonationFetchTimer();
 			metaCharity = new MetaCharityConfig();
+			metaCustomAnim = new MetaSelectAnimationConfig();
 		}
 				
 		public function encode():Dictionary {
@@ -48,9 +54,13 @@ package com.giveawaytool.meta.donations {
 			saveData["metaRecurrentGoal"] = metaRecurrentGoal.encode();
 			saveData["metaBigGoal"] = metaBigGoal.encode();
 			saveData["metaStreamTipConnection"] = metaStreamTipConnection.encode();
-			saveData["numSubs"] = MetaGameProgress.instance.metaSubsConfig.crntSub.value;;
+			saveData["metaStreamLabsConnection"] = metaStreamLabsConnection.encode();
+			
+			
 			saveData["metaAutoFetch"] = metaAutoFetch.encode();
 			saveData["metaCharity"] = metaCharity.encode();
+			saveData["metaCustomAnim"] = metaCustomAnim.encode();
+			saveData["metaHasBeenTested"] = metaHasBeenTested.encode();
 			
 			
 			return saveData; 
@@ -67,11 +77,14 @@ package com.giveawaytool.meta.donations {
 			saveData["lastDonators"] = allDonations.encodeForWidget(this);
 			saveData["metaRecurrentGoal"] = metaRecurrentGoal.encode();
 			saveData["metaBigGoal"] = metaBigGoal.encode();
-			saveData["numSubs"] = MetaGameProgress.instance.metaSubsConfig.crntSub.value;
+			saveData["numSubs"] = MetaGameProgress.instance.metaSubsConfig.getCrntSub();
+			saveData["numSubsGoal"] = MetaGameProgress.instance.metaSubsConfig.goalSub;
 			saveData["metaCharity"] = metaCharity.settings.encode();
+
+			saveData["metaCustomAnim"] = metaCustomAnim.encodeWidget();
+			saveData["jukebox"] = JukeBox.getInstance().encode();
 			
-			
-			
+
 			return saveData; 
 		}
 		
@@ -85,8 +98,11 @@ package com.giveawaytool.meta.donations {
 			metaRecurrentGoal.decode(loadData["metaRecurrentGoal"]);
 			metaBigGoal.decode(loadData["metaBigGoal"]);
 			metaStreamTipConnection.decode(loadData["metaStreamTipConnection"]);
+			metaStreamLabsConnection.decode(loadData["metaStreamLabsConnection"]);
 			metaAutoFetch.decode(loadData["metaAutoFetch"]);
 			metaCharity.decode(loadData["metaCharity"]);
+			metaCustomAnim.decode(loadData["metaCustomAnim"]);
+			metaHasBeenTested.decode(loadData["metaHasBeenTested"]);
 			//numSubs = loadData["numSubs"];
 			
 		}
@@ -152,6 +168,7 @@ package com.giveawaytool.meta.donations {
 			}
 		}
 		
+				
 		
 	}
 }

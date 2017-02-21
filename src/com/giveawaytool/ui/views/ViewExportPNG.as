@@ -1,7 +1,7 @@
 package com.giveawaytool.ui.views {
 	import com.giveawaytool.effect.EffectFlashColor;
 	import com.giveawaytool.meta.MetaGameProgress;
-	import com.giveawaytool.ui.UIPopUp;
+	import com.giveawaytool.ui.UI_PopUp;
 	import com.giveawaytool.ui.UI_GiveawayMenu;
 	import com.giveawaytool.ui.UI_SelectAnimation;
 	import com.giveawaytool.ui.UI_WinnerPreview;
@@ -24,11 +24,9 @@ package com.giveawaytool.ui.views {
 			super(pScreen, pVisual);
 			pScreen.registerClick(exportPNGBtn, onExport);
 			pScreen.registerClick(previewBtn, onPreview);
-			pScreen.registerClick(selectBtn, onSelect);
-		
+			
 			pScreen.setNameOfDynamicBtn(exportPNGBtn, "Export PNG");
 			pScreen.setNameOfDynamicBtn(previewBtn, "Preview");
-			
 			
 			pScreen.registerEvent(winnersTxt, FocusEvent.FOCUS_OUT, onEdit);
 			pScreen.registerEvent(text1Txt, FocusEvent.FOCUS_OUT, onEdit);
@@ -36,11 +34,9 @@ package com.giveawaytool.ui.views {
 			pScreen.registerEvent(text3Txt, FocusEvent.FOCUS_OUT, onEdit);
 			
 			viewCustomBtn = new ViewCustomAnimBtn(pScreen, selectBtn, MetaGameProgress.instance.metaExportPNGConfig.metaAnimation);
+			viewCustomBtn.viewOptionSlider.visual.visible = false;
 			
-		}
-
-		private function onSelect() : void {
-			new UI_SelectAnimation(MetaGameProgress.instance.metaExportPNGConfig.metaAnimation);
+			viewCustomBtn.visualMc.gotoAndStop(2);
 			
 		}
 
@@ -82,7 +78,7 @@ package com.giveawaytool.ui.views {
 		
 		private function saveComplete(ui:UI_WinnerPreview):void {
 			if(ui) ui.destroy();
-			UIPopUp.createOkOnly("Image saved with success!", null);
+			UI_PopUp.createOkOnly("Image saved with success!", null);
 		}
 		
 		private function createPreview():UI_WinnerPreview {

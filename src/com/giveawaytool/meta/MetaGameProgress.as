@@ -1,5 +1,6 @@
 package com.giveawaytool.meta {
-	import com.kojaktsl.TwitterAPI.MetaTweet;
+	import com.giveawaytool.io.playerio.MetaGameWispGroup;
+	import com.giveawaytool.io.twitch.MetaTwithConnection;
 	import com.giveawaytool.meta.donations.MetaDonationsConfig;
 	import com.lachhh.lachhhengine.DataManager;
 	import com.lachhh.lachhhengine.sfx.JukeBox;
@@ -11,8 +12,7 @@ package com.giveawaytool.meta {
 	public class MetaGameProgress {
 		static public var instance:MetaGameProgress = new MetaGameProgress();
 		public var winners:Array;
-		public var participants:Array;
-		public var moderators:Array;
+		
 		public var metaGiveawayConfig : MetaGiveawayConfig;
 		public var metaCountdownConfig : MetaCountdownConfig;
 		public var metaExportPNGConfig : MetaExportPNGConfig;
@@ -20,11 +20,19 @@ package com.giveawaytool.meta {
 		public var metaToolConfig: MetaToolConfig;
 		public var metaDonationsConfig : MetaDonationsConfig;
 		public var metaTweetAlertConfig : MetaTweetAlertConfig ;
-		public var metaSubsConfig : MetaSubsConfig;
+		public var metaCheerAlertConfig : MetaCheerConfig ;
+		public var metaHostAlertConfig : MetaHostConfig;
 		
+		public var metaSubsConfig : MetaSubsConfig;
+		public var metaFollowConfig : MetaFollowConfig;
+		public var metaTwitchConnection : MetaTwithConnection;
+		
+		public var metaTwitchChat : MetaTwitchChat;
+		public var metaGameWisp:MetaGameWispGroup;
+		
+		public var metaEmoteFireworksSettings : MetaEmoteFireworksSettings;
 		
 		private var saveData : Dictionary = new Dictionary();
-		
 		
 		public function MetaGameProgress() {			
 			clear();
@@ -36,8 +44,7 @@ package com.giveawaytool.meta {
 		
 		public function clear():void {
 			winners = [];
-			participants = [];
-			moderators = [];
+			
 			metaGiveawayConfig = new MetaGiveawayConfig();
 			metaCountdownConfig = new MetaCountdownConfig();
 			metaExportPNGConfig = new MetaExportPNGConfig();
@@ -46,6 +53,13 @@ package com.giveawaytool.meta {
 			metaDonationsConfig = new MetaDonationsConfig();
 			metaSubsConfig = new MetaSubsConfig();
 			metaTweetAlertConfig = new MetaTweetAlertConfig();
+			metaTwitchConnection = new MetaTwithConnection();
+			metaFollowConfig = new MetaFollowConfig();
+			metaTwitchChat = new MetaTwitchChat();
+			metaCheerAlertConfig = new MetaCheerConfig();
+			metaHostAlertConfig = new MetaHostConfig();
+			metaEmoteFireworksSettings = new MetaEmoteFireworksSettings(); 
+			metaGameWisp = new MetaGameWispGroup();
 		}
 		
 		public function encode():Dictionary {
@@ -59,7 +73,13 @@ package com.giveawaytool.meta {
 			saveData["metaDonationsConfig"] = metaDonationsConfig.encode();
 			saveData["metaSubsConfig"] = metaSubsConfig.encode();
 			saveData["metaTweetAlertConfig"] = metaTweetAlertConfig.encode();
+			saveData["metaTwitchConnection"] = metaTwitchConnection.encode();
+			saveData["metaFollowConfig"] = metaFollowConfig.encode();
 			
+			saveData["metaCheerAlertConfig"] = metaCheerAlertConfig.encode();
+			saveData["metaHostAlertConfig"] = metaHostAlertConfig.encode();
+			
+			saveData["metaEmoteFireworksSettings"] = metaEmoteFireworksSettings.encode();
 			
 			return saveData; 
 		}
@@ -76,14 +96,18 @@ package com.giveawaytool.meta {
 			metaDonationsConfig.decode(obj["metaDonationsConfig"]) ;
 			metaSubsConfig.decode(obj["metaSubsConfig"]) ;
 			metaTweetAlertConfig.decode(obj["metaTweetAlertConfig"]) ;
+			metaTwitchConnection.decode(obj["metaTwitchConnection"]) ;
+			metaFollowConfig.decode(obj["metaFollowConfig"]) ;
 			
+			metaHostAlertConfig.decode(obj["metaHostAlertConfig"]) ;
+			metaCheerAlertConfig.decode(obj["metaCheerAlertConfig"]) ;
+			
+			metaEmoteFireworksSettings.decode(obj["metaEmoteFireworksSettings"]);
 			
 			if(winners == null) winners = [];
 		}
 		
-		public function isModerator(str:String):Boolean {
-			return (moderators.indexOf(str) != -1);
-		}		
+		
 		
 		public function isEmpty():Boolean {
 			return (winners.length <= 0);
@@ -91,6 +115,15 @@ package com.giveawaytool.meta {
 		
 		public function saveToLocal():void {
 			 DataManager.saveLocally(encode());
+		}
+		
+		public function atLeastOneHasBeenTested():Boolean {
+			 if(metaFollowConfig.metaHasBeenTested.hasBeenTested) return true;
+			 if(metaSubsConfig.metaHasBeenTested.hasBeenTested) return true;
+			 if(metaHostAlertConfig.metaHasBeenTested.hasBeenTested) return true;
+			 if(metaDonationsConfig.metaHasBeenTested.hasBeenTested) return true;
+			 if(metaCheerAlertConfig.metaHasBeenTested.hasBeenTested) return true;
+			 return false;
 		}
 		
 		public function loadFromLocal():void {

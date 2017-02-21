@@ -1,4 +1,5 @@
 package com.giveawaytool.ui {
+	import com.giveawaytool.ui.views.MetaHost;
 	import com.MetaIRCMessage;
 	import flash.utils.Dictionary;
 	/**
@@ -28,6 +29,17 @@ package com.giveawaytool.ui {
 			result.name = m.getHostName();
 			result.numViewers = m.getHostViewerCount();
 			return result;
+		}
+
+		public static function createFromMetaHost(metaHost : MetaHost) : MetaHostAlert{
+			var result:MetaHostAlert = new MetaHostAlert();
+			result.name = metaHost.name;
+			result.numViewers = metaHost.numViewers;
+			return result;
+		}
+
+		public static function createDummy() : MetaHostAlert {
+			return createFromMetaHost(MetaHost.createDUMMY());
 		}
 	}
 }

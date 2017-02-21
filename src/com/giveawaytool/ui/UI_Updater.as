@@ -25,11 +25,11 @@ package com.giveawaytool.ui {
 		
 		private var appUpdater:ApplicationUpdater = new ApplicationUpdater();
 		
-		public function UI_Updater() {
+		public function UI_Updater(updateUrl:String) {
 			super(AnimationFactory.ID_UI_UPDATE);
 			registerClick(skipBtn, onSkip);
 			
-			appUpdater.updateURL = "http://lachhhAndFriends.com/twitchTool/update_flash.xml";
+			appUpdater.updateURL = updateUrl;
 			//we set the event handlers for INITIALIZED nad ERROR
 			appUpdater.addEventListener(UpdateEvent.INITIALIZED, onUpdate);
 			appUpdater.addEventListener(ErrorEvent.ERROR, onError);
@@ -147,14 +147,9 @@ package com.giveawaytool.ui {
 		//sets the state of the window in error display mode
 		function displayWindowError(errorId:int, errorText:String):void {
 			loadingSpinMc.visible = false;
-			UIPopUp.createOkOnly("Oops, something went wrong with the update.\n(" + errorText + ")", new Callback(onSkip, this, null));
-			/*windowContent.title = "Error";
-			windowContent.enableDescription = true;
-			windowContent.description = "Error ID: " + errorId + ". " + errorText;
-			windowContent.buttonLeft.visible = false;
-			windowContent.buttonRight.label = "Close";
-			windowContent.bar.visible = false;
-			addEventToButton(windowContent.buttonRight, MouseEvent.CLICK, closeWindow);*/
+			UI_PopUp.createOkOnly("Oops, something went wrong with the update.\n(" + errorText + ")", new Callback(onSkip, this, null));
+			
+
 		}
 		
 		//close the window
@@ -173,7 +168,7 @@ package com.giveawaytool.ui {
 		
 		private function toMenu():void {
 			destroy();
-			new UI_GiveawayMenu();
+			new UI_Menu();
 			var fx:EffectFlashColor = EffectFlashColor.create(0, 5);
 			fx.start();
 		}

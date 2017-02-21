@@ -1,4 +1,8 @@
 package com.giveawaytool.components {
+	import com.giveawaytool.ui.UI_PlayMovies;
+	import com.lachhh.lachhhengine.ui.UIBase;
+	import com.giveawaytool.io.twitch.TwitchConnection;
+	import com.giveawaytool.ui.UI_Menu;
 	import com.giveawaytool.meta.MetaTwitterAlert;
 	import com.giveawaytool.ui.UI_Donation;
 	import com.giveawaytool.effect.CallbackTimerEffect;
@@ -17,10 +21,10 @@ package com.giveawaytool.components {
 		private var timer : CallbackTimerEffect;
 		public var metaTweetAlertConfig : MetaTweetAlertConfig;
 		public var metaTimer : MetaDonationFetchTimer;
-		public var collectCallback:Callback;
+		public var tickCallback:Callback;
 		private var tweetSearch : LogicCheckForNewTweets;
-		public var uiDonation : UI_Donation;
 		public var tweetSearch2 : LogicCheckForNewTweets;
+		
 
 		public function LogicAutoFetchTweet(m : MetaTweetAlertConfig) {
 			super();
@@ -35,6 +39,7 @@ package com.giveawaytool.components {
 			super.start();
 			timer = CallbackTimerEffect.addWaitCallFctToActor(actor, tick, 1000);
 			metaTimer.resetTimer();
+			metaTimer.secondsLeft = 3;
 		}
 
 		private function tick() : void {
@@ -45,21 +50,22 @@ package com.giveawaytool.components {
 			if(metaTimer.secondsLeft <= 0) {
 				onEndTimer();
 			}
-			uiDonation.viewDonationsEdit.viewTweetConnection.refresh();
+			
+			if(tickCallback) tickCallback.call();
+			var ui:UI_PlayMovies = UIBase.manager.getFirst(UI_PlayMovies) as UI_PlayMovies;
+			if(ui) ui.viewTwitter.refreshTimer();
 		}
 		
 		private function onEndTimer():void {
-			/*var r:StreamTipRequest = uiDonationEdit.loadNewData(true);
-			if(metaTimer.autoCollect) {
-				r.onSuccess.addCallback(new Callback(uiDonationEdit.collectAllNewDonations, this, [true]));
-			}*/
+
+			if(!UI_Menu.instance.logicNotification.logicVIPAccess.canAccessTweets()) return ;
+			
 			tweetSearch.twitter = metaTweetAlertConfig.getTwitter();
 			tweetSearch2.twitter = metaTweetAlertConfig.getTwitter();
-			//tweetSearch.searchTweets("#Lachhhisters");
-			//tweetSearch.searchTweets("@LachhhAndFriends");
+			
 			tweetSearch.searchTweets("lachhh.tv");
 			tweetSearch2.searchTweets("#Lachhhisters");
-			//tweetSearch.searchTweets("twitch.tv/LachhAndFriends");
+			
 			metaTimer.resetTimer();
 		}
 		
@@ -68,7 +74,7 @@ package com.giveawaytool.components {
 			var m:MetaTwitterAlert = MetaTwitterAlert.createFromMetaTweet(metaTweet);
 			m.searchedFor = "lachhh.tv";
 			
-			uiDonation.sendTwitterAlert(m);
+			UI_Menu.instance.logicNotification.logicSendToWidget.sendTwitterAlert(m);
 		}
 		
 		private function onNewTweet2(metaTweet:MetaTweet):void {
@@ -76,7 +82,7 @@ package com.giveawaytool.components {
 			var m:MetaTwitterAlert = MetaTwitterAlert.createFromMetaTweet(metaTweet);
 			m.searchedFor = "#Lachhhisters";
 			
-			uiDonation.sendTwitterAlert(m);
+			UI_Menu.instance.logicNotification.logicSendToWidget.sendTwitterAlert(m);
 		}
 
 		override public function destroy() : void {
